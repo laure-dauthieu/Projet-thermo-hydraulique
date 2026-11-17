@@ -15,3 +15,6 @@ D_GAINE = 9.5e-3              # diamètre extérieur de la gaine [m]
 E_GAINE = 0.57e-3             # épaisseur de la gaine [m]
 D_PASTILLE_UO2 = 8.19e-3      # diamètre de la pastille UO2 [m]
 PAS = 12.6e-3                 # pas du réseau carré [m]
+
+# --- Propriétés des matériaux ---
+K_GAINE = 16.0                # conductivité thermique du Zircaloy [W/m/K] (ordre de grandeur vers 350 °C)

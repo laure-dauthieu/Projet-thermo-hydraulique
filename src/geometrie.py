@@ -28,6 +28,12 @@ mu = PropsSI('V', 'T', T_moy, 'P', P_PRIMAIRE, 'Water')   # [Pa.s]
 v = m_sc / (rho * A)
 Re = rho * v * D_h / mu
 
+# 6. Coefficient d'échange convectif gaine -> eau (Dittus-Boelter)
+Pr = PropsSI('PRANDTL', 'T', T_moy, 'P', P_PRIMAIRE, 'Water')     # clé : 'PRANDTL'
+k_eau = PropsSI('L', 'T', T_moy, 'P', P_PRIMAIRE, 'Water')  # clé : 'L' [W/m/K]
+Nu = 0.023 * Re**0.8 * Pr**0.4  # Formule de Dittus-Boelter
+h_conv = Nu * k_eau / D_h                                    # [W/m²/K]
+
 # Affichage (seulement si on lance ce fichier directement, pas lors d'un import)
 if __name__ == "__main__":
     print(f"A      = {A:.3e} m²")
@@ -37,3 +43,6 @@ if __name__ == "__main__":
     print(f"m_sc   = {m_sc:.3f} kg/s")
     print(f"v      = {v:.2f} m/s")
     print(f"Re     = {Re:.2e}")
+    print(f"Nu     = {Nu:.0f}")
+    print(f"h_conv = {h_conv:.0f} W/m²/K")
+    
