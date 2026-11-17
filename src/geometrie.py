@@ -28,11 +28,12 @@ mu = PropsSI('V', 'T', T_moy, 'P', P_PRIMAIRE, 'Water')   # [Pa.s]
 v = m_sc / (rho * A)
 Re = rho * v * D_h / mu
 
-# Affichage
-print(f"A      = {A:.3e} m²")
-print(f"D_h    = {D_h*1e3:.2f} mm")
-print(f"q_lin = {q_lin:.2f} W/m")
-print(f"m_coeur = {m_coeur:.2f} kg/s")
-print(f"m_sc   = {m_sc:.3f} kg/s")
-print(f"v      = {v:.2f} m/s")
-print(f"Re     = {Re:.2e}")
+# Affichage (seulement si on lance ce fichier directement, pas lors d'un import)
+if __name__ == "__main__":
+    print(f"A      = {A:.3e} m²")
+    print(f"D_h    = {D_h*1e3:.2f} mm")
+    print(f"q_lin = {q_lin:.2f} W/m")
+    print(f"m_coeur = {m_coeur:.2f} kg/s")
+    print(f"m_sc   = {m_sc:.3f} kg/s")
+    print(f"v      = {v:.2f} m/s")
+    print(f"Re     = {Re:.2e}")
