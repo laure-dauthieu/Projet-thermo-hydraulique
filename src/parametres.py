@@ -18,3 +18,5 @@ PAS = 12.6e-3                 # pas du réseau carré [m]
 
 # --- Propriétés des matériaux ---
 K_GAINE = 16.0                # conductivité thermique du Zircaloy [W/m/K] (ordre de grandeur vers 350 °C)
+H_JEU = 5700.0                # conductance du jeu pastille-gaine rempli d'hélium [W/m²/K]
+                              # (valeur classique des manuels pour un combustible neuf : 5 000 à 6 000)

@@ -68,8 +68,8 @@ flowchart LR
 
     classDef done fill:#2e7d32,color:#fff,stroke:#1b5e20
     classDef todo fill:#eeeeee,color:#555,stroke:#999,stroke-dasharray:4 3
-    class A,B,C,D,E done
-    class F,G,H todo
+    class A,B,C,D,E,F done
+    class G,H todo
 ```
 
 <sub>En vert : déjà calculé. En gris : à venir.</sub>
@@ -87,6 +87,7 @@ flowchart LR
 | Puissance linéique moyenne / max | **18,4 / 28,8 kW/m** | Un mètre de crayon dégage autant que 12 à 19 radiateurs électriques de 1,5 kW |
 | Température max de la paroi de la gaine | **336,5 °C** à z = +0,67 m | Sous la saturation (344,8 °C) : pas d'ébullition sur le crayon moyen |
 | Température max à l'intérieur de la gaine | **370,4 °C** à z = +0,30 m | 37 K de plus à travers seulement 0,57 mm de métal |
+| Température max à la surface de la pastille | **565,2 °C** à z = +0,08 m | Près de 200 K perdus dans un jeu d'hélium de moins de 0,1 mm : la plus grosse résistance thermique hors combustible |
 
 > **Contrôle de cohérence :** le profil de température calculé retombe exactement sur **286,0 °C** en bas et **323,0 °C** en haut du cœur.
 > Le bilan d'énergie est donc juste de bout en bout.
@@ -149,13 +150,14 @@ $$
 
 ```
 T_eau ──(+ΔT convection)──► T_paroi ──(+ΔT gaine)──► T_gaine_int ──(+ΔT jeu)──► T_surface_UO₂ ──(+ΔT pastille)──► T_centre
-                ✅                          ✅                         à venir                         à venir
+                ✅                          ✅                            ✅                            à venir
 ```
 
 | Étape | Modèle | Résultat (maximum) |
 |---|---|---|
 | Convection eau → gaine | Loi de Newton $\Delta T = \dfrac{q'}{h_{conv}\, \pi D}$, avec $h_{conv}(z)$ recalculé en chaque point à partir des propriétés locales de l'eau | $h_{conv}$ de 36 à 39 kW/m²/K · $\Delta T$ = 26 K · **T_paroi = 336,5 °C** |
 | Conduction dans la gaine | Cylindre creux : $\Delta T = \dfrac{q'}{2\pi k}\ln\dfrac{r_{ext}}{r_{int}}$ ($k$ = 16 W/m/K) | $\Delta T$ = 36,7 K · **T_gaine_int = 370,4 °C** |
+| Jeu pastille-gaine (hélium, 85 µm à froid) | Conductance globale : $\Delta T = \dfrac{q'}{h_{jeu}\, \pi D_{pastille}}$ ($h_{jeu}$ = 5 700 W/m²/K) | $\Delta T$ = 196,6 K · **T_surface_pastille = 565,2 °C** |
 
 **D'où vient le logarithme ?** Dans un cylindre, la même puissance traverse des surfaces de plus en plus grandes ($2\pi r$ par mètre) quand le rayon augmente.
 Le gradient de température est donc plus fort côté intérieur, et l'intégration de $1/r$ fait apparaître un $\ln$.
@@ -178,6 +180,7 @@ car les écarts proportionnels à $q'$ prennent de plus en plus de poids face à
 | Eau | z = +1,83 m (sortie du cœur) |
 | Paroi de la gaine | z = +0,67 m |
 | Face intérieure de la gaine | z = +0,30 m |
+| Surface de la pastille | z = +0,08 m |
 | Centre de la pastille | attendu très proche de z = 0 |
 
 C'est exactement pourquoi l'analyse de sûreté ne peut pas se contenter de regarder « le haut » ou « le milieu » du cœur :
@@ -197,6 +200,7 @@ Un modèle n'a de valeur que si l'on sait ce qu'il néglige.
 | Corrélation de **Dittus-Boelter** | Classique en convection forcée turbulente, $Re > 10^4$ | Établie pour des tubes ronds ; corrections existantes pour les faisceaux de crayons (Weisman) |
 | **Pression constante** (pas de pertes de charge) | $\Delta P_{cœur}$ ≈ 1-2 bar, négligeable devant 155 bar | Effet très faible sur les propriétés de l'eau |
 | Conductivité de la gaine **constante** | Varie peu entre 330 et 370 °C | Corrélation $k(T)$ du Zircaloy |
+| Conductance du jeu **constante** (5 700 W/m²/K) | Valeur classique pour un combustible neuf | Le jeu se referme avec l'irradiation (gonflement de la pastille, fluage de la gaine) et les gaz de fission dégradent l'hélium : modèles de type Ross-Stoute |
 | **Pas de conduction axiale** dans le crayon | Crayon très élancé (3,66 m pour 9,5 mm) : gradients radiaux ≫ axiaux | — |
 | **Régime permanent** | Fonctionnement nominal | Simulation de transitoires (feuille de route) |
 
@@ -209,7 +213,7 @@ Un modèle n'a de valeur que si l'on sait ce qu'il néglige.
 - [ ] **Séance 3** : températures radiales jusqu'au centre du combustible
   - [x] convection eau → paroi de la gaine
   - [x] conduction dans la gaine
-  - [ ] jeu pastille-gaine rempli d'hélium
+  - [x] jeu pastille-gaine rempli d'hélium
   - [ ] conduction dans la pastille d'UO₂ avec source de chaleur interne → **température au centre**
 - [ ] **Séance 4** : canal chaud et sûreté
   - [ ] facteurs de point chaud ($F_{\Delta H}$, $F_q$)
@@ -234,7 +238,7 @@ Les scripts s'importent les uns les autres : ils se lancent **depuis le dossier 
 cd src
 python geometrie.py      # séance 1 : débits, Reynolds, coefficient d'échange
 python profil_axial.py   # séance 2 : profils q'(z) et T_eau(z), enregistre figures/profil_axial.png
-python radial.py         # séance 3 : températures de paroi et de gaine
+python radial.py         # séance 3 : températures de paroi, de gaine et de surface de pastille
 ```
 
 Exemple de sortie de `radial.py` :
@@ -245,6 +249,9 @@ h_conv min/max = 36.0 / 39.0 kW/m²/K
 T_paroi max    = 336.5 °C à z = 0.67 m
 ΔT_gaine max   = 36.7 K
 T_gaine_int max = 370.4 °C à z = 0.30 m
+e_jeu (à froid) = 85 µm
+ΔT_jeu max     = 196.6 K
+T_pastille_surf max = 565.2 °C à z = 0.08 m
 ```
 
 ---
@@ -257,7 +264,7 @@ T_gaine_int max = 370.4 °C à z = 0.30 m
 │   ├── parametres.py     # toutes les données d'entrée du REP 900 MWe, en unités SI
 │   ├── geometrie.py      # sous-canal, débits, Reynolds, Dittus-Boelter
 │   ├── profil_axial.py   # q'(z) en cosinus, T_eau(z) par bilan d'enthalpie
-│   └── radial.py         # températures de paroi et de gaine le long du crayon
+│   └── radial.py         # températures de paroi, de gaine et de surface de pastille
 ├── figures/
 │   └── profil_axial.png
 ├── requirements.txt      # bibliothèques à installer (numpy, matplotlib, CoolProp)
